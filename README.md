@@ -1,2 +1,2 @@
-# app_mobile_pizzaria
+# Mobile App Pizzaria
 Rocketseat final challange.
