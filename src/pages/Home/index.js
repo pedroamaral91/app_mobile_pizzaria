@@ -5,6 +5,7 @@ import PropTypes from 'prop-types';
 import { useSelector, useDispatch } from 'react-redux';
 import { Creators as ProdutosCreators } from '~/store/ducks/products';
 
+import AsyncStorage from '@react-native-community/async-storage';
 import {
   Container,
   FoodTypes,
@@ -21,18 +22,29 @@ import Header from '~/components/Header';
 import Images from '~/components/UI/Images';
 
 function Home({ navigation }) {
-  const { products } = useSelector(state => state.products);
+  const { products, cart } = useSelector(state => ({
+    products: state.products.data,
+    cart: state.cart.orders,
+  }));
   const dispatch = useDispatch();
-
   useEffect(() => {
+    // AsyncStorage.clear();
     if (products.length === 0) {
       dispatch(ProdutosCreators.getProducts());
     }
   }, []);
 
+  const totalItemsCart = cart.length;
+
   return (
     <Container>
-      <Header icon="history" title="Pizzaria Don Juan" showButtomCart navigation={navigation} />
+      <Header
+        icon="history"
+        title="Pizzaria Don Juan"
+        showButtomCart
+        cartItems={totalItemsCart}
+        navigation={navigation}
+      />
       {products.length > 0 && (
         <FoodTypes
           data={products}

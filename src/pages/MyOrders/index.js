@@ -1,57 +1,60 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+
+import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
+import { Creators as OrdersCreators } from '~/store/ducks/orders';
+import { parseISO, formatRelative } from 'date-fns';
+import pt from 'date-fns/locale/pt';
 
 import {
   Container, Wrapper, OrderList, WrapperItem, Text,
 } from './styles';
 import Header from '~/components/Header';
+import { formatToReal } from '~/services/number_format';
 
-const pedidos = [
-  {
-    id: Math.random(),
-    num_pedido: '3',
-    horario_pedido: '17',
-    valor: 'R$ 42,00',
-  },
-  {
-    id: Math.random(),
-    num_pedido: '3',
-    horario_pedido: '17',
-    valor: 'R$ 42,00',
-  },
-  {
-    id: Math.random(),
-    num_pedido: '3',
-    horario_pedido: '17',
-    valor: 'R$ 42,00',
-  },
-];
+function MyOrders({ navigation }) {
+  const orders = useSelector(state => state.orders.data.map(order => ({
+      ...order,
+      date: (formatRelative(parseISO(order.updatedAt), new Date(), { locale: pt })),
+      fullPriceWithMask: formatToReal(order.full_price),
+  })));
 
-const MyOrders = () => (
-  <Container>
-    <Header title="Meus pedidos" icon="chevron-left" />
-    <Wrapper>
-      <OrderList
-        data={pedidos}
-        keyExtractor={pedido => String(pedido.id)}
-        renderItem={({ item }) => (
-          <WrapperItem>
-            <Text size={12} color="#0b2031">
-              Pedido #
-              {item.num_pedido}
-            </Text>
-            <Text size={11} color="#706e7b">
-              Ontem às&nbsp;
-              {item.horario_pedido}
-h
-            </Text>
-            <Text size={16} color="#0b2031" bold>
-              {item.valor}
-            </Text>
-          </WrapperItem>
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(OrdersCreators.getRequest());
+  }, []);
+  return (
+    <Container>
+      <Header title="Meus pedidos" icon="chevron-left" navigation={navigation} />
+      <Wrapper>
+        {!!orders.length && (
+          <OrderList
+            data={orders}
+            keyExtractor={order => String(order.id)}
+            renderItem={({ item }) => (
+              <WrapperItem>
+                <Text size={12} color="#0b2031">
+                  Pedido #
+                  {item.id}
+                </Text>
+                <Text size={11} color="#706e7b">
+                  {item.date}
+                </Text>
+                <Text size={16} color="#0b2031" bold>
+                  {item.fullPriceWithMask}
+                </Text>
+              </WrapperItem>
+            )}
+          />
         )}
-      />
-    </Wrapper>
-  </Container>
-);
+      </Wrapper>
+    </Container>
+  );
+}
+
+MyOrders.propTypes = {
+  navigation: PropTypes.object.isRequired,
+};
 
 export default MyOrders;

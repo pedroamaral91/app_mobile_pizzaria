@@ -7,13 +7,7 @@ import PropTypes from 'prop-types';
 import DropdownAlert from 'react-native-dropdownalert';
 
 import {
-  Container,
-  InputText,
-  Logo,
-  Buttom,
-  TextButtom,
-  TextError,
-  Wrapper,
+  Container, InputText, Logo, Buttom, TextButtom, TextError, Wrapper,
 } from './styles';
 
 const schema = Yup.object().shape({
@@ -34,11 +28,11 @@ const initialValues = {
 
 function Signup({ navigation }) {
   const [loading, setLoading] = useState(false);
-  
+
   async function handleSubmitForm(params) {
     setLoading(true);
     try {
-      await api.post('cadastrar/user', params);
+      await api.post('register/user', params);
       dropDownAlertRef.alertWithType('success', 'Success', 'Cadastro realizado com sucesso!');
     } catch (err) {
       const { data } = err.response;
@@ -62,18 +56,16 @@ function Signup({ navigation }) {
                 value={name}
                 onChangeText={handleChange('name')}
                 placeholder="Nome completo"
+                autoCapitalize="words"
               />
-              {errors.name && touched.name ? (
-                <TextError>{errors.name}</TextError>
-              ) : null}
+              {errors.name && touched.name ? <TextError>{errors.name}</TextError> : null}
               <InputText
                 value={email}
                 onChangeText={handleChange('email')}
                 placeholder="Seu email"
+                autoCapitalize="none"
               />
-              {errors.email && touched.email ? (
-                <TextError>{errors.email}</TextError>
-              ) : null}
+              {errors.email && touched.email ? <TextError>{errors.email}</TextError> : null}
               <InputText
                 value={password}
                 onChangeText={handleChange('password')}

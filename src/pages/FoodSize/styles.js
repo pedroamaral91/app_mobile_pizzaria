@@ -9,7 +9,9 @@ export const Container = styled.View`
   flex: 1;
 `;
 
-export const Wrapper = styled.View`
+export const ItemButton = styled.TouchableOpacity.attrs({
+  activeOpacity: 0.6,
+})`
   background-color: #fff;
   padding: 40px;
   flex: 1;

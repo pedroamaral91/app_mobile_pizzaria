@@ -53,3 +53,12 @@ export const ButtonText = styled.Text`
   letter-spacing: 0;
   text-align: center;
 `;
+
+export const TextError = styled.Text`
+  font-family: 'Helvetica-Bold';
+  font-size: 10px;
+  color: #ff5959;
+  letter-spacing: 0;
+  text-align: left;
+  align-self: ${props => (props.center ? 'center' : 'flex-start')};
+`;

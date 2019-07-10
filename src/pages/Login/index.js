@@ -9,7 +9,9 @@ import PropTypes from 'prop-types';
 import api from '~/services/api';
 
 import Spinner from '~/components/UI/Spinner';
-import { Container, InputText, Logo, Buttom, TextButtom, Wrapper, TextError } from './styles';
+import {
+  Container, InputText, Logo, Buttom, TextButtom, Wrapper, TextError,
+} from './styles';
 
 function Login({ navigation }) {
   const [errorMessage, setErrorMessage] = useState(null);
@@ -27,7 +29,9 @@ function Login({ navigation }) {
   }, []);
 
   const schema = Yup.object().shape({
-    email: Yup.string().email('Digite um email válido.').required('Campo requerido.'),
+    email: Yup.string()
+      .email('Digite um email válido.')
+      .required('Campo requerido.'),
     password: Yup.string().required('Campo requerido.'),
   });
 
@@ -36,16 +40,17 @@ function Login({ navigation }) {
     try {
       const response = await api.post('/login', params);
       const { user, token } = response.data;
-      await AsyncStorage.setItem('@App:email', user.email);
-      await AsyncStorage.setItem('@App:name', user.name);
-      await AsyncStorage.setItem('@App:auth_token', token);
+      await AsyncStorage.multiSet([
+        ['@App:email', user.email],
+        ['@App:name', user.name],
+        ['@App:auth_token', token],
+      ]);
       navigation.navigate('Logged');
-      
     } catch (er) {
       const { data } = er.response;
       setErrorMessage(data.error);
       setLoading(false);
-    } 
+    }
   }
 
   return (
@@ -57,12 +62,15 @@ function Login({ navigation }) {
           validationSchema={schema}
           initialValues={{ email: '', password: '' }}
         >
-          {({ handleChange, handleSubmit, email, password, errors, touched }) => (
+          {({
+            handleChange, handleSubmit, email, password, errors, touched,
+          }) => (
             <>
               <InputText
                 value={email}
                 onChangeText={handleChange('email')}
                 placeholder="Seu email"
+                autoCapitalize="none"
               />
               {errors.email && touched.email ? <TextError>{errors.email}</TextError> : null}
               <InputText

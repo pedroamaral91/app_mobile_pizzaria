@@ -1,8 +1,18 @@
 import React from 'react';
-import Header from '~/components/Header';
 
+import { useSelector, useDispatch } from 'react-redux';
+import { Creators as CartCreators } from '~/store/ducks/cart';
+
+import PropTypes from 'prop-types';
+
+import Header from '~/components/Header';
+import Images from '~/components/UI/Images';
+
+import { formatToReal } from '~/services/number_format';
+import DropdownAlert from 'react-native-dropdownalert';
 import {
   Container,
+  Vacuum,
   Lista,
   Wrapper,
   WrapperContent,
@@ -22,63 +32,65 @@ import {
   ButtonText,
 } from './styles';
 
-const data = [
-  {
-    id: Math.random(),
-    tipo: 'Pizza Calabresa',
-    tamanho: 'Tamanho: média',
-    valor: 'R$ 42,00',
-  },
-  {
-    id: Math.random(),
-    tipo: 'Pizza Calabresa',
-    tamanho: 'Tamanho: média',
-    valor: 'R$ 42,00',
-  },
-  {
-    id: Math.random(),
-    tipo: 'Pizza Calabresa',
-    tamanho: 'Tamanho: média',
-    valor: 'R$ 42,00',
-  },
-];
+function Cart({ navigation }) {
+  const cart = useSelector(state => state.cart);
+  const dispatch = useDispatch();
+  const { orders, fullPrice } = cart;
 
-const Cart = () => (
-  <Container>
-    <Header icon="chevron-left" title="Carrinho" price="R$ 0,00" />
-    <Wrapper>
-      <Lista
-        data={data}
-        keyExtractor={item => String(item.id)}
-        renderItem={({ item }) => (
-          <WrapperContent>
-            <WrapperIconText>
-              <WrapperIcon>
-                <ImageIcon />
-              </WrapperIcon>
-              <WrapperText>
-                <Title>{item.tipo}</Title>
-                <Description>{item.tamanho}</Description>
-                <Price>{item.valor}</Price>
-              </WrapperText>
-            </WrapperIconText>
-            <RemoveButton>
-              <RemoveIcon />
-            </RemoveButton>
-          </WrapperContent>
+  const price = formatToReal(fullPrice);
+  return (
+    <Container>
+      <Header icon="chevron-left" title="Carrinho" price={price} navigation={navigation} />
+      <DropdownAlert ref={ref => (dropDownAlertRef = ref)} />
+      <Wrapper>
+        {orders.length ? (
+          <Lista
+            data={orders}
+            keyExtractor={item => String(item.id)}
+            renderItem={({ item }) => (
+              <WrapperContent>
+                <WrapperIconText>
+                  <WrapperIcon>
+                    <ImageIcon source={Images[`pizza${item.type.id}`]} />
+                  </WrapperIcon>
+                  <WrapperText>
+                    <Title>{`${item.type.description} ${item.type.type}`}</Title>
+                    <Description>{`Tamanho: ${item.size.description}`}</Description>
+                    <Price>{item.priceWithMask}</Price>
+                  </WrapperText>
+                </WrapperIconText>
+                <RemoveButton onPress={() => dispatch(CartCreators.removeOrder(item.id))}>
+                  <RemoveIcon />
+                </RemoveButton>
+              </WrapperContent>
+            )}
+          />
+        ) : (
+          <Vacuum />
         )}
-      />
-      <WrapperButtons>
-        <ButtonCart>
-          <ButtonIcon icon="cart-plus" size={20} color="#666666" />
-        </ButtonCart>
-        <Button>
-          <ButtonText>Realizar Pedido</ButtonText>
-          <ButtonIcon icon="angle-right" size={20} color="#fff" />
-        </Button>
-      </WrapperButtons>
-    </Wrapper>
-  </Container>
-);
+        <WrapperButtons>
+          <ButtonCart onPress={() => navigation.navigate('Home')}>
+            <ButtonIcon icon="cart-plus" size={20} color="#666666" />
+          </ButtonCart>
+          <Button
+            onPress={() => {
+              if (orders.length > 0) {
+                return navigation.navigate('FinishOrder');
+              }
+              return dropDownAlertRef.alertWithType('error', 'Error', 'Carrinho vazio');
+            }}
+          >
+            <ButtonText>Realizar Pedido</ButtonText>
+            <ButtonIcon icon="angle-right" size={20} color="#fff" />
+          </Button>
+        </WrapperButtons>
+      </Wrapper>
+    </Container>
+  );
+}
+
+Cart.propTypes = {
+  navigation: PropTypes.object.isRequired,
+};
 
 export default Cart;

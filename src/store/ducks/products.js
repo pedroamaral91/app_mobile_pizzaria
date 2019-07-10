@@ -4,13 +4,13 @@ export const Types = {
 };
 
 const INITIAL_STATE = {
-  products: [],
+  data: [],
 };
 
 export default function products(state = INITIAL_STATE, action) {
   switch (action.type) {
     case Types.GET_SUCCESS:
-      return { ...state, products: action.payload };
+      return { ...state, data: action.payload };
     default:
       return state;
   }

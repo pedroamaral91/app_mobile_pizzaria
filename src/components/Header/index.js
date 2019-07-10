@@ -18,10 +18,13 @@ function Header({
   title, icon, cartItems, showButtomCart, price, navigation,
 }) {
   function handleNavigation() {
-    console.tron.log(navigation.state.routeName)
-    if (navigation.state.routeName !== 'Home') {
-      navigation.goBack();
+    if (navigation.state.routeName !== 'Home' && navigation.state.routeName !== 'MyOrders') {
+      return navigation.goBack();
     }
+    if (navigation.state.routeName === 'MyOrders') {
+      return navigation.navigate('Home');
+    }
+    return navigation.navigate('MyOrders');
   }
   return (
     <Container showButtomCart={showButtomCart} price={price}>
@@ -33,7 +36,7 @@ function Header({
       <HeaderTitle>{title}</HeaderTitle>
       {!!price && <Title>{price}</Title>}
       {showButtomCart && (
-        <ButtomCart>
+        <ButtomCart onPress={() => navigation.navigate('Cart')}>
           <IconHeader icon="shopping-bag" />
           <IconBadge>
             <CountItems>{cartItems}</CountItems>

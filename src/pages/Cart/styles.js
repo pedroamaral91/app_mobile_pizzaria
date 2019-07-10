@@ -1,13 +1,15 @@
 import styled from 'styled-components/native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 
-import Pizza from '~/assets/Tipos/pizza.png';
-
 export const Container = styled.View`
   flex: 1;
 `;
 
 export const Lista = styled.FlatList``;
+export const Vacuum = styled.View`
+  background-color: transparent;
+  margin-top: 150px;
+`;
 
 export const Wrapper = styled.View`
   padding: 0 30px;
@@ -38,9 +40,10 @@ export const WrapperText = styled.View`
   margin-left: 15px;
 `;
 
-export const ImageIcon = styled.Image.attrs({
-  source: Pizza,
-})``;
+export const ImageIcon = styled.Image.attrs({})`
+  width: 78px;
+  height: 78px;
+`;
 
 export const Title = styled.Text`
   font-family: 'Helvetica';
